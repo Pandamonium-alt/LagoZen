@@ -79,31 +79,44 @@ function setup() {
     lagoVideo.hide();
     lagoVideo.volume(0);
 
-    // Botones del reproductor (abajo, centrados)
+    // Botones del reproductor (abajo centrados correctamente)
     let btnSize = 70;
-    let spacing = 30;
-    let bottomMargin = 40;
+    let spacing = 40;
+    let bottomMargin = 60;
 
-    // Botón Anterior
-    btnPrev = createImg('assets/prev.png');
-    btnPrev.size(btnSize, btnSize);
-    btnPrev.position(width/2 - btnSize - spacing, height - bottomMargin - btnSize/2);
-    aplicarEstiloBoton(btnPrev);
-    btnPrev.mousePressed(anteriorCancion);
+    let playSize = btnSize * 1.4;
 
-    // Botón Play/Pause (central, más grande)
+    let centerX = width / 2;
+    let centerY = height - bottomMargin;
+
+    // PLAY (centro)
     btnPlay = createImg('assets/play.png');
-    btnPlay.size(btnSize * 1.4, btnSize * 1.4); // más grande
-    btnPlay.position(width/2 - (btnSize * 1.4)/2, height - bottomMargin - (btnSize * 1.4)/2);
+    btnPlay.size(playSize, playSize);
+    btnPlay.position(centerX - playSize/2, centerY - playSize/2);
     aplicarEstiloBoton(btnPlay);
     btnPlay.mousePressed(playPause);
 
-    // Botón Siguiente
+    // PREV (izquierda)
+    btnPrev = createImg('assets/prev.png');
+    btnPrev.size(btnSize, btnSize);
+    btnPrev.position(
+        centerX - playSize/2 - spacing - btnSize,
+        centerY - btnSize/2
+    );
+    aplicarEstiloBoton(btnPrev);
+    btnPrev.mousePressed(anteriorCancion);
+
+    // NEXT (derecha)
     btnNext = createImg('assets/next.png');
     btnNext.size(btnSize, btnSize);
-    btnNext.position(width/2 + spacing, height - bottomMargin - btnSize/2);
+    btnNext.position(
+        centerX + playSize/2 + spacing,
+        centerY - btnSize/2
+    );
     aplicarEstiloBoton(btnNext);
     btnNext.mousePressed(siguienteCancion);
+
+
 
     // Iniciar con la primera canción (opcional)
     // cambiarMusica(canciones[0], titulos[0]);
@@ -227,17 +240,15 @@ function touchStarted() {
 
 
 function windowResized() {
-    setTimeout(() => {
-        resizeCanvas(windowWidth, windowHeight);
-        // Re-posicionar botones aquí
-        let btnSize = 70;
-        let spacing = 30;
-        let bottomMargin = 40;
-
-        btnPrev.position(width/2 - btnSize - spacing, height - bottomMargin - btnSize/2);
-        btnPlay.position(width/2 - (btnSize * 1.4)/2, height - bottomMargin - (btnSize * 1.4)/2);
-        btnNext.position(width/2 + spacing, height - bottomMargin - btnSize/2);
-    }, 100); // 100ms de delay para que WebView actualice height
+    resizeCanvas(windowWidth, windowHeight);
+    
+    // Re-posicionar botones al cambiar tamaño/orientación
+    let margen = 20;
+    let btn1 = select('button:nth-child(1)'); // primer botón
+    let btn2 = select('button:nth-child(2)'); // segundo botón
+    
+    if (btn1) btn1.position(width - 120, margen);
+    if (btn2) btn2.position(width - 120, margen + 50);
 }
 
 function cambiarMusica(musica, titulo) {
