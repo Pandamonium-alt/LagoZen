@@ -83,6 +83,16 @@ function setup() {
 
     createCanvas(w, h);
 
+    let container = createDiv();
+    container.id("uiContainer");
+    container.style("position", "absolute");
+    container.style("left", "50%");
+    container.style("top", "50%");
+    container.style("transform", "translate(-50%, -50%)");
+    container.style("width", width + "px");
+    container.style("height", height + "px");
+    container.style("pointer-events", "none");
+
     lagoVideo.hide();
     lagoVideo.volume(0);
 
@@ -152,12 +162,12 @@ function draw() {
         }
 
         // Calcular ancho del texto para que el rect se adapte
-        textSize(22);
+        textSize(18);
         textStyle(BOLD);
         let textoAncho = textWidth(tituloActual);
-        let padding = 40;  // espacio extra a los lados
+        let padding = 30;  // espacio extra a los lados
         let rectAncho = textoAncho + padding * 2;
-        let rectAlto = 70; // más alto para que se vea cómodo
+        let rectAlto = 55; // más alto para que se vea cómodo
         let rectX = width/2 - rectAncho/2;
         let rectY = 20;
 
@@ -177,33 +187,33 @@ function draw() {
     }
 }
 
-function touchStarted() {
+function touchStarted(event) {
 
-    // Solo si se tocó el canvas
-    if (mouseY < height - 120) {
-
-        if (!videoIniciado) {
-            lagoVideo.loop();
-            videoIniciado = true;
-        }
-
-        userStartAudio();
-
-        let x = mouseX;
-        let y = mouseY;
-
-        let margen = 80;
-        if (y < margen) y = margen;
-        if (y > height - margen) y = height - margen;
-
-        gotaX = x;
-        gotaDestinoY = y;
-        gotaY = 0;
-        gotaActiva = true;
+    // Si el click fue sobre un botón HTML, no hacer nada
+    if (event.target.tagName === "IMG") {
+        return;
     }
 
-    return false;
+    if (!videoIniciado) {
+        lagoVideo.loop();
+        videoIniciado = true;
+    }
+
+    userStartAudio();
+
+    let x = mouseX;
+    let y = mouseY;
+
+    let margen = 80;
+    if (y < margen) y = margen;
+    if (y > height - margen) y = height - margen;
+
+    gotaX = x;
+    gotaDestinoY = y;
+    gotaY = 0;
+    gotaActiva = true;
 }
+
 
 
 function windowResized() {
@@ -299,8 +309,10 @@ function crearBotones() {
     let centerY = height - bottomMargin;
 
     btnPlay = createImg('assets/play.png');
+    btnPlay.parent("uiContainer"); 
     btnPlay.size(playSize, playSize);
     btnPlay.position(centerX - playSize/2, centerY - playSize/2);
+    btnPlay.style("pointer-events", "auto"); 
     aplicarEstiloBoton(btnPlay);
     btnPlay.mousePressed(() => {
         userStartAudio();
@@ -308,11 +320,13 @@ function crearBotones() {
     });
 
     btnPrev = createImg('assets/prev.png');
+    btnPrev.parent("uiContainer");
     btnPrev.size(btnSize, btnSize);
     btnPrev.position(
         centerX - playSize/2 - spacing - btnSize,
         centerY - btnSize/2
     );
+    btnPrev.style("pointer-events", "auto");
     aplicarEstiloBoton(btnPrev);
     btnPrev.mousePressed(() => {
         userStartAudio();
@@ -320,11 +334,13 @@ function crearBotones() {
     });
 
     btnNext = createImg('assets/next.png');
+    btnNext.parent("uiContainer");
     btnNext.size(btnSize, btnSize);
     btnNext.position(
         centerX + playSize/2 + spacing,
         centerY - btnSize/2
     );
+    btnNext.style("pointer-events", "auto");
     aplicarEstiloBoton(btnNext);
     btnNext.mousePressed(() => {
         userStartAudio();
