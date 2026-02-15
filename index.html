@@ -15,16 +15,21 @@
     <meta name="theme-color" content="#a0d8ef">
     
     <style>
-        body {
-            margin:0;
-            background:#000;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            height:100vh;
-        }
+    body {
+        margin: 0;
+        background: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
 
+    canvas {
+        max-height: 100vh;
+        max-width: 100vw;
+    }
     </style>
+
     <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

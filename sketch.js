@@ -72,10 +72,6 @@ let aspectRatio = 9 / 16;
 
 function setup() {
 
-    canvas.elt.style.touchAction = "none";
-
-    frameRate(30);
-
     let w = windowWidth;
     let h = windowHeight;
 
@@ -85,10 +81,7 @@ function setup() {
         h = w / aspectRatio;
     }
 
-    canvas = createCanvas(w, h);
-
-    // Centrar canvas en PC
-    canvas.position((windowWidth - w) / 2, (windowHeight - h) / 2);
+    createCanvas(w, h);
 
     lagoVideo.hide();
     lagoVideo.volume(0);
@@ -226,14 +219,13 @@ function windowResized() {
 
     resizeCanvas(w, h);
 
-    canvas.position((windowWidth - w) / 2, (windowHeight - h) / 2);
-
     btnPlay.remove();
     btnPrev.remove();
     btnNext.remove();
 
     crearBotones();
 }
+
 
 
 function cambiarMusica(musica, titulo) {
@@ -308,22 +300,18 @@ function crearBotones() {
 
     btnPlay = createImg('assets/play.png');
     btnPlay.size(playSize, playSize);
-    btnPlay.position(
-        canvas.x + centerX - playSize/2,
-        canvas.y + centerY - playSize/2
-    );
+    btnPlay.position(centerX - playSize/2, centerY - playSize/2);
     aplicarEstiloBoton(btnPlay);
     btnPlay.mousePressed(() => {
         userStartAudio();
         playPause();
     });
 
-
     btnPrev = createImg('assets/prev.png');
     btnPrev.size(btnSize, btnSize);
     btnPrev.position(
-        canvas.x + centerX - playSize/2 - spacing - btnSize,
-        canvas.y + centerY - btnSize/2
+        centerX - playSize/2 - spacing - btnSize,
+        centerY - btnSize/2
     );
     aplicarEstiloBoton(btnPrev);
     btnPrev.mousePressed(() => {
@@ -331,17 +319,16 @@ function crearBotones() {
         anteriorCancion();
     });
 
-
     btnNext = createImg('assets/next.png');
     btnNext.size(btnSize, btnSize);
     btnNext.position(
-        canvas.x + centerX + playSize/2 + spacing,
-        canvas.y + centerY - btnSize/2
+        centerX + playSize/2 + spacing,
+        centerY - btnSize/2
     );
     aplicarEstiloBoton(btnNext);
     btnNext.mousePressed(() => {
         userStartAudio();
         siguienteCancion();
     });
-
 }
+
