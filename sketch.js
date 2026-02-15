@@ -68,59 +68,34 @@ function preload() {
 }
 
 let canvas;
-let aspectRatio = 9 / 16; // formato celular
+let aspectRatio = 9 / 16;
 
 function setup() {
+
+    canvas.elt.style.touchAction = "none";
+
     frameRate(30);
-    
-    // Canvas full responsive
-    createCanvas(windowWidth, windowHeight);
-    
+
+    let w = windowWidth;
+    let h = windowHeight;
+
+    if (w / h > aspectRatio) {
+        w = h * aspectRatio;
+    } else {
+        h = w / aspectRatio;
+    }
+
+    canvas = createCanvas(w, h);
+
+    // Centrar canvas en PC
+    canvas.position((windowWidth - w) / 2, (windowHeight - h) / 2);
+
     lagoVideo.hide();
     lagoVideo.volume(0);
 
-    // Botones del reproductor (abajo centrados correctamente)
-    let btnSize = 70;
-    let spacing = 40;
-    let bottomMargin = 60;
-
-    let playSize = btnSize * 1.4;
-
-    let centerX = width / 2;
-    let centerY = height - bottomMargin;
-
-    // PLAY (centro)
-    btnPlay = createImg('assets/play.png');
-    btnPlay.size(playSize, playSize);
-    btnPlay.position(centerX - playSize/2, centerY - playSize/2);
-    aplicarEstiloBoton(btnPlay);
-    btnPlay.mousePressed(playPause);
-
-    // PREV (izquierda)
-    btnPrev = createImg('assets/prev.png');
-    btnPrev.size(btnSize, btnSize);
-    btnPrev.position(
-        centerX - playSize/2 - spacing - btnSize,
-        centerY - btnSize/2
-    );
-    aplicarEstiloBoton(btnPrev);
-    btnPrev.mousePressed(anteriorCancion);
-
-    // NEXT (derecha)
-    btnNext = createImg('assets/next.png');
-    btnNext.size(btnSize, btnSize);
-    btnNext.position(
-        centerX + playSize/2 + spacing,
-        centerY - btnSize/2
-    );
-    aplicarEstiloBoton(btnNext);
-    btnNext.mousePressed(siguienteCancion);
-
-
-
-    // Iniciar con la primera canción (opcional)
-    // cambiarMusica(canciones[0], titulos[0]);
+    crearBotones();
 }
+
 
 function draw() {
     image(lagoVideo, 0, 0, width, height);
@@ -209,47 +184,57 @@ function draw() {
     }
 }
 
-function mousePressed() { touchStarted(); }  // Para PC
 function touchStarted() {
-    // 🔥 Activar video en primer toque
-    if (!videoIniciado) {
-        lagoVideo.loop();
-        videoIniciado = true;
+
+    // Solo si se tocó el canvas
+    if (mouseY < height - 120) {
+
+        if (!videoIniciado) {
+            lagoVideo.loop();
+            videoIniciado = true;
+        }
+
         userStartAudio();
+
+        let x = mouseX;
+        let y = mouseY;
+
+        let margen = 80;
+        if (y < margen) y = margen;
+        if (y > height - margen) y = height - margen;
+
+        gotaX = x;
+        gotaDestinoY = y;
+        gotaY = 0;
+        gotaActiva = true;
     }
-
-    if (touches.length > 0) {
-        var x = touches[0].x;
-        var y = touches[0].y;
-    } else {
-        var x = mouseX;
-        var y = mouseY;
-    }
-
-    let margen = 80;
-    if (y < margen) y = margen;
-    if (y > height - margen) y = height - margen;
-
-    gotaX = x;
-    gotaDestinoY = y;
-    gotaY = 0;
-    gotaActiva = true;
 
     return false;
 }
 
 
 function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
-    
-    // Re-posicionar botones al cambiar tamaño/orientación
-    let margen = 20;
-    let btn1 = select('button:nth-child(1)'); // primer botón
-    let btn2 = select('button:nth-child(2)'); // segundo botón
-    
-    if (btn1) btn1.position(width - 120, margen);
-    if (btn2) btn2.position(width - 120, margen + 50);
+
+    let w = windowWidth;
+    let h = windowHeight;
+
+    if (w / h > aspectRatio) {
+        w = h * aspectRatio;
+    } else {
+        h = w / aspectRatio;
+    }
+
+    resizeCanvas(w, h);
+
+    canvas.position((windowWidth - w) / 2, (windowHeight - h) / 2);
+
+    btnPlay.remove();
+    btnPrev.remove();
+    btnNext.remove();
+
+    crearBotones();
 }
+
 
 function cambiarMusica(musica, titulo) {
     if (musicaActual === musica) return;
@@ -308,4 +293,55 @@ function anteriorCancion() {
     indiceActual = (indiceActual - 1 + canciones.length) % canciones.length;
     cambiarMusica(canciones[indiceActual], titulos[indiceActual]);
     btnPlay.attribute('src', 'assets/pause.png');
+}
+
+function crearBotones() {
+
+    let btnSize = 70;
+    let spacing = 40;
+    let bottomMargin = 60;
+
+    let playSize = btnSize * 1.4;
+
+    let centerX = width / 2;
+    let centerY = height - bottomMargin;
+
+    btnPlay = createImg('assets/play.png');
+    btnPlay.size(playSize, playSize);
+    btnPlay.position(
+        canvas.x + centerX - playSize/2,
+        canvas.y + centerY - playSize/2
+    );
+    aplicarEstiloBoton(btnPlay);
+    btnPlay.mousePressed(() => {
+        userStartAudio();
+        playPause();
+    });
+
+
+    btnPrev = createImg('assets/prev.png');
+    btnPrev.size(btnSize, btnSize);
+    btnPrev.position(
+        canvas.x + centerX - playSize/2 - spacing - btnSize,
+        canvas.y + centerY - btnSize/2
+    );
+    aplicarEstiloBoton(btnPrev);
+    btnPrev.mousePressed(() => {
+        userStartAudio();
+        anteriorCancion();
+    });
+
+
+    btnNext = createImg('assets/next.png');
+    btnNext.size(btnSize, btnSize);
+    btnNext.position(
+        canvas.x + centerX + playSize/2 + spacing,
+        canvas.y + centerY - btnSize/2
+    );
+    aplicarEstiloBoton(btnNext);
+    btnNext.mousePressed(() => {
+        userStartAudio();
+        siguienteCancion();
+    });
+
 }
