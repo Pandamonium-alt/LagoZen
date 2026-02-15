@@ -227,15 +227,17 @@ function touchStarted() {
 
 
 function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
-    
-    // Re-posicionar botones al cambiar tamaño/orientación
-    let margen = 20;
-    let btn1 = select('button:nth-child(1)'); // primer botón
-    let btn2 = select('button:nth-child(2)'); // segundo botón
-    
-    if (btn1) btn1.position(width - 120, margen);
-    if (btn2) btn2.position(width - 120, margen + 50);
+    setTimeout(() => {
+        resizeCanvas(windowWidth, windowHeight);
+        // Re-posicionar botones aquí
+        let btnSize = 70;
+        let spacing = 30;
+        let bottomMargin = 40;
+
+        btnPrev.position(width/2 - btnSize - spacing, height - bottomMargin - btnSize/2);
+        btnPlay.position(width/2 - (btnSize * 1.4)/2, height - bottomMargin - (btnSize * 1.4)/2);
+        btnNext.position(width/2 + spacing, height - bottomMargin - btnSize/2);
+    }, 100); // 100ms de delay para que WebView actualice height
 }
 
 function cambiarMusica(musica, titulo) {
